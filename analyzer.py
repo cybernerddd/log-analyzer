@@ -56,5 +56,75 @@ class LogAnalyzer(object):
              match.append(line)
        return match
 
+    def extract_ips(self):
+        """
+        returns all IP's as a list
+        """
+        all_ips = []
+
+        for line in self.lines:
+            current_line = line.split()
+            if not current_line: # skip empty lines
+                continue
+
+            ip = current_line[0]
+            parts = ip.split(".")
+
+            valid = len(parts) == 4
+            
+            if len(parts) == 4:
+                valid = True
+
+            for part in parts:
+                if not part.isdigit():
+                    valid = False
+            
+            if valid:
+                all_ips.append(ip)
+        return all_ips
+
+    def count_ip(self, ip):
+        """
+        input: ip, 
+        returns the number of requests
+        coming from IP
+        """
+        count_ip = 0
+
+        for line in self.lines:
+            if ip in line:
+                count_ip += 1
+        return count_ip
+
+    def unique_ips(self):
+        """returns unique IP's,
+        ips that appear ones."""
+        unique = []
+
+        for ip in self.extract_ips():
+            if self.count_ip(ip) == 1:
+                unique.append(ip)
+
+        return unique
+
+    def top_ip(self):
+        """
+        returns the IP that appears the most
+        """
+        high_counter = 0 # keep count of the hightest count
+
+        for ip in self.extract_ips():
+            count = self.count_ip(ip)
+
+            if count > high_counter:
+                high_counter = count
+
+                # save the highest "ip"
+                highest = ip
+        return highest
+
+
+            
+
     
        
