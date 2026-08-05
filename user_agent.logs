@@ -1,0 +1,5 @@
+192.168.1.7 GET /login Mozilla/5.0
+192.168.1.7 POST /login Mozilla/5.0
+192.168.1.9 GET /admin sqlmap/1.8
+192.168.1.12 GET /robots.txt curl/8.0
+192.168.1.20 GET / python-requests/2.31
