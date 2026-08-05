@@ -1,4 +1,5 @@
 import os
+from config import suspicious_agents
 
 class LogAnalyzer(object):
     """A log analyzing class"""
@@ -122,6 +123,96 @@ class LogAnalyzer(object):
                 # save the highest "ip"
                 highest = ip
         return highest
+
+    def count_failed(self, ip):
+        """
+        Returns the total number of failed
+        login attempts for the given IP.
+        """
+        count = 0
+        for line in self.lines:
+            if ip in line and "FAILED LOGIN" in line:
+                count += 1
+
+        return count
+
+    def detect_bruteforce(self):
+        """
+        Detects and returns IPs
+        that are brute-forcing the service.
+        """ 
+        brute_ips = []
+
+         # Loop through all extracted IPs
+        for ip in self.extract_ips():
+
+            counter = self.count_failed(ip)       
+
+            if counter >= 5 and ip not in brute_ips:
+                brute_ips.append(ip)
+
+        return brute_ips
+
+    def count_user_agent(self, agent):
+        """
+        input: str,
+        Returns the total count of a given 
+        User-Agent
+        """
+        count = 0
+        for line in self.lines:
+            if agent in line:
+                count += 1
+
+        return count
+
+    def find_user_agent(self, agent):
+        """
+        input: user-agent 'str',
+        returns a list of all matching requests
+        containing the agent
+        """
+        agent_match = [line for line in self.lines if agent in line]
+
+        if len(agent_match) == 0:
+            return f"No request containing agent: {agent}"
+        
+        return agent_match
+
+    def list_suspicious_agents(self):
+        """
+        Returns a list of all suspicious
+        User-Agents in the logs, a message if None.
+        """
+        suspicious_results = [] # holds the confirmed agents
+
+        for agent in suspicious_agents:
+            # agent is curl,sqlmap, burp...
+            count = self.count_user_agent(agent)
+
+            if count > 0:
+                suspicious_results.append(agent)
+
+        if not suspicious_results:
+            return f"YaY! No suspicious request found."
+
+        return suspicious_results
+
+            
+
+
+
+
+
+
+
+        
+
+
+               
+
+
+                
 
 
             
