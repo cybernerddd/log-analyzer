@@ -1,5 +1,9 @@
 import os
-from config import suspicious_agents
+from config import (
+    suspicious_agents, 
+    status_codes,
+    http_methods
+)
 
 class LogAnalyzer(object):
     """A log analyzing class"""
@@ -56,6 +60,10 @@ class LogAnalyzer(object):
        for line in self.lines:
              match.append(line)
        return match
+
+        # -------------------------
+        # IP Analysis
+        # -------------------------
 
     def extract_ips(self):
         """
@@ -153,6 +161,10 @@ class LogAnalyzer(object):
 
         return brute_ips
 
+        # -------------------------
+        # User-Agent Analysis
+        # -------------------------
+
     def count_user_agent(self, agent):
         """
         input: str,
@@ -174,7 +186,7 @@ class LogAnalyzer(object):
         """
         agent_match = [line for line in self.lines if agent in line]
 
-        if len(agent_match) == 0:
+        if not agent_match:
             return f"No request containing agent: {agent}"
         
         return agent_match
@@ -197,6 +209,94 @@ class LogAnalyzer(object):
             return f"YaY! No suspicious request found."
 
         return suspicious_results
+
+        # -------------------------
+        # Status Code Analysis
+        # -------------------------
+
+    def count_status(self, status):
+        """
+        input: str; status code,
+        returns total count of responses with
+        the exact status code
+        """
+        return self.count_keyword(status)
+
+    def find_status(self, status):
+        """
+        input: status code 'str',
+        returns a list of all responses
+        of that code.
+        """
+        code_match = [line for line in self.lines if status in line]
+
+        if not code_match:
+            return f"No response containing status code: {status}"
+
+        return code_match
+
+    def most_common_status(self):
+        """
+        Returns the most frequent response
+        status code in the logs..
+        """
+        highest_count = 0
+        most_common = None
+
+        for code in status_codes:
+            # code is 200, 301...
+            count = self.count_status(code)
+
+            # compare to the highest
+            if count > highest_count:
+                highest_count = count
+                most_common = code
+
+        return most_common, highest_count
+
+    # -------------------------
+    # HTTP Method Analysis
+    # -------------------------
+
+    def count_method(self, method):
+        """
+        Returns the total count for the given HTTP method.
+        """
+        assert method in http_methods, "input must be a valid HTTP method."
+        return self.count_keyword(method)
+
+    def find_method(self, method):
+        """
+        input: HTTP method 'str',
+        returns a list of all requests
+        of that method.
+        """
+        assert method in http_methods, "input must be a valid HTTP method."
+        method_match = [line for line in self.lines if method in line]
+        return method_match
+
+    def top_method(self):
+        """returns the top request"""
+        highest_count = 0
+        highest_req = None
+
+        for method in http_methods:
+            count = self.count_method(method)
+
+        # compare the higheest req
+            if count > highest_count:
+                highest_count = count
+                highest_req = method
+
+        return highest_req
+
+
+        
+
+
+
+
+
 
             
 
