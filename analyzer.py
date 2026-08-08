@@ -87,9 +87,13 @@ class LogAnalyzer(object):
             for part in parts:
                 if not part.isdigit():
                     valid = False
+            # remove duplicates
+            if ip in all_ips:
+                valid = False
             
             if valid:
                 all_ips.append(ip)
+
         return all_ips
 
     def count_ip(self, ip):
@@ -147,7 +151,8 @@ class LogAnalyzer(object):
     def detect_bruteforce(self):
         """
         Detects and returns IPs
-        that are brute-forcing the service.
+        that are brute-forcing the service
+        through failed requests.
         """ 
         brute_ips = []
 
@@ -289,6 +294,51 @@ class LogAnalyzer(object):
                 highest_req = method
 
         return highest_req
+
+    #########################
+    #########################
+    # DETECT DIRECTORY BRUTEFORCE #
+    #########################
+
+    def detect_directory_busting(self):
+        """
+        detect directory bruteforce from suspicious actions.
+        """
+        DIRECTORY_BUST_THRESHOLD = 15
+        suspicious_list = [] 
+
+        ips = self.extract_ips()
+ 
+        for ip in ips:
+            urls = []
+            # find the URL that belongs to the ip
+            # assuming index 2 contains the URL path, 
+            # change this if needed.
+            for line in self.lines:
+                parts = line.split()
+                line_ip = parts[0]
+
+                # check if the current ip owns the current line
+                if line_ip == ip:
+                    url_path = parts[2]
+
+                    # append path to urls list
+                    if url_path not in urls:
+                        urls.append(url_path)
+
+                # check if it passses the benchmark or 15
+
+            if len(urls) >= DIRECTORY_BUST_THRESHOLD:
+                suspicious_list.append(ip)
+
+        return suspicious_list
+            
+
+        
+        
+            
+            
+
 
 
         
