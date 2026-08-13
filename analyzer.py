@@ -2,8 +2,10 @@ import os
 from config import (
     suspicious_agents, 
     status_codes,
-    http_methods
+    http_methods,
+    sqli_indicators
 )
+from helper import decode_url
 
 class LogAnalyzer(object):
     """A log analyzing class"""
@@ -332,7 +334,38 @@ class LogAnalyzer(object):
                 suspicious_list.append(ip)
 
         return suspicious_list
+
+    def detect_sqli(self):
+        """Returns Possible SQL injection activity in log"""
+        suspicious_sqli_logs = []
+
+        # looping through the log lines
+        for line in self.lines:
+
+            # decode and normalise lines to compare.
+            decoded_line = decode_url(line).lower()
+
+            # Loop through the SQL patterns list in config
+            for pattern in sqli_indicators:
+
+                # Check whether the pattern exists in the line
+                if pattern in decoded_line:
+                    if line not in suspicious_sqli_logs:
+                        suspicious_sqli_logs.append(line)
+
+                    # Break inner loop once a match is found for this line
+                    break
+
+        # Return a message when nothing is found
+        if not suspicious_sqli_logs:
+            return "No Possible Sql Injection Attempt Was Found."
+        
+        return suspicious_sqli_logs
+
+
             
+            
+
 
         
         
