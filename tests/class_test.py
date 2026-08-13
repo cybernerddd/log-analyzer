@@ -29,7 +29,8 @@ logs2.load_file()
 
 agent_logs = LogAnalyzer("user_agent.logs")
 agent_logs.load_file()
-print(agent_logs.detect_directory_busting())
+# print(agent_logs.detect_sqli())
+# print(agent_logs.detect_directory_busting())
 # print(agent_logs.count_user_agent("curl"))
 # print(agent_logs.find_user_agent("curl"))
 # print(agent_logs.list_suspicious_agents())
@@ -39,3 +40,13 @@ print(agent_logs.detect_directory_busting())
 # print(agent_logs.top_method())
 
 # print("192.168.1.7 GET /login Mozilla/5.0" .split())
+
+
+######################################
+# TESTING SQLI INJECTION DETECTTION  #
+######################################
+
+
+sqli_test = LogAnalyzer("sqli_test.log")
+sqli_test.load_file()
+print(sqli_test.detect_sqli())
