@@ -37,3 +37,45 @@ http_methods = [
     "OPTIONS",
     "HEAD"
 ]
+
+# Common SQL Injection (SQLi) detection signatures and keywords
+sqli_indicators = [
+    # Boolean-based patterns
+    "or 1=1",
+    "or '1'='1",
+    "or true",
+    "and 1=1",
+    "and '1'='1",
+    
+    # SQL syntax and comment characters
+    "--",
+    "#",
+    "/*",
+    "*/",
+    ";",
+    
+    # Signatures for unauthorized data retrieval
+    "union select",
+    "union all select",
+    "select * from",
+    
+    # Metadata and system signatures
+    "sqlite_version",
+    "version()",
+    "@@version",
+    "table_name",
+    "column_name",
+    "information_schema",
+    
+    # Signatures for time-based analysis
+    "sleep(",
+    "benchmark(",
+    "pg_sleep",
+    "waitfor delay",
+    
+    # Data definition and execution keywords
+    "drop table",
+    "insert into",
+    "update set",
+    "exec("
+]
